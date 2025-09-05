@@ -47,3 +47,27 @@ export type ListScenesResponse = {
   data: SceneRow[];
   error?: string;
 };
+
+export type SceneShotDTO = {
+  id: string;
+  title: string;
+  content: string;
+  image_url?: string | null;
+};
+
+export type SceneAnalysisDTO = {
+  id: string;               // "1"
+  title: string;            // "EXT. CAMPUS - NIGHT"
+  description: string;      // long text
+  screentime: number;       // seconds
+  location: string;
+  estimate_budget: number;  // number
+  content: string;
+  shots: SceneShotDTO[];
+};
+
+export type AnalyzeSceneResponse = {
+  ok: boolean;
+  data?: SceneAnalysisDTO;
+  error?: string;
+};

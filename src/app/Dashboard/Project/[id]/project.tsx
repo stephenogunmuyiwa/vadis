@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState, useRef, useEffect } from "react";
 import { Search } from "lucide-react";
 import { Home, Layer, People, MoneySend, Subtitle } from "iconsax-react";
+import { useSceneAnalysis } from "@/hooks/useSceneAnalysis";
 
 import LeftRail from "@/components/layout/LeftRail";
 import TopBar from "@/components/header/TopBar";
@@ -29,8 +30,14 @@ export default function Project({ projectId }: { projectId: string }) {
   const shotsScrollRef = useRef<HTMLDivElement | null>(null);
   const [activeSceneId, setActiveSceneId] = useState<string | null>(null); // ⬅️ track by id
   const { scenes, loading: loadingScenes } = useScenes(projectId);
+  const {
+    loading: analyzing,
+    meta,
+    shots,
+  } = useSceneAnalysis(projectId, activeSceneId);
   const sceneCount = scenes.length;
   const activeSceneNumber = activeSceneId ? Number(activeSceneId) : 0;
+
   const sceneNumbers = useMemo(
     () =>
       scenes
@@ -58,7 +65,7 @@ export default function Project({ projectId }: { projectId: string }) {
     }),
     [activeScene]
   );
-  const shots: Shot[] = []; // empty until you wire real shots
+  // const shots: Shot[] = []; // empty until you wire real shots
 
   useEffect(() => {
     const root = shotsScrollRef.current;
@@ -292,12 +299,26 @@ export default function Project({ projectId }: { projectId: string }) {
               )}
 
               {/* Section 3: meta + shots OR empty state */}
-              {activeScene === 0 ? (
+              {!activeSceneId ? (
                 <SceneEmpty />
+              ) : analyzing ? (
+                // quick lightweight skeleton while /scene/analyze loads
+                <section className="flex-1 mt-[5px] min-h-0 px-4 sm:px-6 py-4 overflow-auto bg-[#0000000C]">
+                  <div className="w-full h-full flex gap-4">
+                    <div className="w-[300px] h-[220px] rounded-md bg-gray-200 relative overflow-hidden">
+                      <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.7),transparent)]" />
+                    </div>
+                    <div className="flex-1 rounded-md bg-gray-200 relative overflow-hidden">
+                      <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.7),transparent)]" />
+                    </div>
+                  </div>
+                </section>
               ) : (
                 <section className="flex-1 mt-[5px] min-h-0 px-4 sm:px-6 py-4 overflow-auto bg-[#0000000C]">
                   <div className="w-full h-full flex gap-4">
-                    <SceneMetaAside meta={sceneMeta} />
+                    {/* meta from server */}
+                    {meta && <SceneMetaAside meta={meta} />}
+                    {/* shots from server */}
                     <ShotScroller
                       shots={shots}
                       currentShotIdx={currentShotIdx}
