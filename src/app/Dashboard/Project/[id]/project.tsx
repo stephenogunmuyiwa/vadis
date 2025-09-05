@@ -19,7 +19,8 @@ import type { Character, Shot } from "@/types/film";
 import ActorsView from "@/components/actors/ActorsView";
 import FinancesView from "@/components/finances/FinancesView";
 import SummaryView from "@/components/summary/SummaryView";
-
+import SceneMetaAsideSkeleton from "@/components/scene/SceneMetaAsideSkeleton";
+import ShotScrollerSkeleton from "@/components/shot/ShotScrollerSkeleton";
 // (Unused in this refactor but kept as-is to avoid changing your code shape)
 import ShotCard from "@/components/cards/ShotCard";
 
@@ -302,15 +303,10 @@ export default function Project({ projectId }: { projectId: string }) {
               {!activeSceneId ? (
                 <SceneEmpty />
               ) : analyzing ? (
-                // quick lightweight skeleton while /scene/analyze loads
                 <section className="flex-1 mt-[5px] min-h-0 px-4 sm:px-6 py-4 overflow-auto bg-[#0000000C]">
                   <div className="w-full h-full flex gap-4">
-                    <div className="w-[300px] h-[220px] rounded-md bg-gray-200 relative overflow-hidden">
-                      <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.7),transparent)]" />
-                    </div>
-                    <div className="flex-1 rounded-md bg-gray-200 relative overflow-hidden">
-                      <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.7),transparent)]" />
-                    </div>
+                    <SceneMetaAsideSkeleton />
+                    <ShotScrollerSkeleton />
                   </div>
                 </section>
               ) : (
