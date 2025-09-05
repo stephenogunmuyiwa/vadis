@@ -9,7 +9,7 @@ export class HttpError extends Error {
   }
 }
 
-async function withTimeout<T>(p: Promise<T>, ms = 30000000000000000000): Promise<T> {
+async function withTimeout<T>(p: Promise<T>, ms = 30000): Promise<T> {
   let t: NodeJS.Timeout;
   const timeout = new Promise<never>((_, reject) => {
     t = setTimeout(() => reject(new Error("Request timed out")), ms);
