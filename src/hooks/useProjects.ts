@@ -20,7 +20,12 @@ export function useProjects() {
     try {
       const resp = await getProjects(userEmail);
       if (!resp.ok) throw new Error("Server error");
-      setProjects(resp.data ?? []);
+
+      const sorted = [...(resp.data ?? [])].sort(
+        (a, b) => (b.created_date ?? 0) - (a.created_date ?? 0)
+      );
+
+      setProjects(sorted);
     } catch (e: any) {
       const msg = e?.message ?? "Unable to load projects.";
       setError(msg);
@@ -31,7 +36,6 @@ export function useProjects() {
   }, [userEmail]);
 
   useEffect(() => {
-    // Fetch when the dashboard first opens
     refetch();
   }, [refetch]);
 
