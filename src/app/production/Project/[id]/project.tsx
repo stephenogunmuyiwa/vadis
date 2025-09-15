@@ -67,7 +67,7 @@ export default function Project({ projectId }: { projectId: string }) {
     { key: "SCENE", label: "Scene", icon: Layer },
     { key: "ACTORS", label: "Actors", icon: People },
     { key: "FINANCES", label: "Finances", icon: MoneySend },
-    { key: "SUMMARY", label: "Summary", icon: Subtitle },
+    // { key: "SUMMARY", label: "Summary", icon: Subtitle },
   ];
 
   // useEffect(() => {
@@ -289,21 +289,21 @@ export default function Project({ projectId }: { projectId: string }) {
           {/* ACTORS view */}
           {selected === "ACTORS" && (
             <ActorsView
-              projectCreatedISO="2025-03-08"
-              projectCreatedLabel="08 Mar, 2025"
+              projectCreatedISO=""
+              projectCreatedLabel=""
               projectId={projectId}
               userEmail={email || ""}
             />
           )}
           {selected === "FINANCES" && (
             <FinancesView
-              projectCreatedISO="2025-03-08"
-              projectCreatedLabel="08 Mar, 2025"
+              projectCreatedISO=""
+              projectCreatedLabel=""
               // (optional) pass a scenesCount if you want to mirror your real scenes
               scenesCount={100}
             />
           )}
-          {selected === "SUMMARY" && (
+          {/* {selected === "SUMMARY" && (
             <SummaryView
               projectCreatedISO="2025-03-08"
               projectCreatedLabel="08 Mar, 2025"
@@ -320,7 +320,7 @@ export default function Project({ projectId }: { projectId: string }) {
               runtimeMinutesEstimate={runtimeMinutesEstimate}
               productionEstimate={productionEstimate}
             />
-          )}
+          )} */}
         </div>
       </main>
     </div>
