@@ -257,7 +257,19 @@ export default function Project({ projectId }: { projectId: string }) {
                 <section className="flex-1 mt-[5px] min-h-0 px-4 sm:px-6 py-4 overflow-auto bg-[#0000000C]">
                   <div className="w-full h-full flex gap-4">
                     {/* meta from server */}
-                    {meta && <SceneMetaAside meta={meta} />}
+                    {/* meta from server */}
+                    {meta && (
+                      <SceneMetaAside
+                        meta={{
+                          title: meta.title,
+                          description: meta.description,
+                          estimated: meta.screentime ?? "", // ← map screentime → estimated
+                          cost: meta.estimateBudget ?? "", // ← map estimateBudget → cost
+                          location: meta.location,
+                          characters: meta.characters,
+                        }}
+                      />
+                    )}
                     {/* shots from server */}
                     <ShotScroller
                       shots={shots}
