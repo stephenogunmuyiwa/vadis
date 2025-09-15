@@ -2,7 +2,6 @@
 
 import {
   RefreshCw,
-  Check,
   ChevronDown,
   ChevronUp,
   Star,
@@ -15,32 +14,14 @@ import {
   Info,
 } from "lucide-react";
 import { useState } from "react";
-
-type Suggested = {
-  name: string;
-  avatarUrl?: string | null;
-  note?: string;
-
-  // NEW (optional): shown next to the name when present
-  rating?: number;
-
-  // Expanded details (unchanged from your data model)
-  risk: "Low" | "Medium" | "High";
-  reason: string;
-  available: boolean | "Available" | "On hold" | "Busy";
-  fee: string;
-  age: number;
-  recentWorks: string[];
-};
+import { SuggestedActor } from "@/types/character";
 
 export default function SuggestedActorCard({
   actor,
-  onAccept,
   onResuggest,
   className,
 }: {
-  actor: Suggested;
-  onAccept?: () => void;
+  actor: SuggestedActor;
   onResuggest?: () => void;
   className?: string;
 }) {
@@ -77,12 +58,12 @@ export default function SuggestedActorCard({
           <div className="w-full h-full bg-gray-200" />
         )}
 
-        {/* Overlay (above image) */}
+        {/* Overlay */}
         <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 z-10">
-          {/* Gradient behind overlay content */}
+          {/* Gradient */}
           <div className="absolute inset-0 z-0 pointer-events-none bg-gradient-to-t from-black/85 via-black/55 to-transparent" />
 
-          {/* Header row: name + (optional) rating + expand/collapse */}
+          {/* Header row */}
           <div className="relative z-10 flex items-start justify-between gap-3">
             <div className="text-white min-w-0">
               <div className="flex items-center gap-2">
@@ -111,78 +92,79 @@ export default function SuggestedActorCard({
               title={expanded ? "Collapse details" : "Expand details"}
             >
               {expanded ? (
-                <ChevronDown className="h-5 w-5" />
-              ) : (
                 <ChevronUp className="h-5 w-5" />
+              ) : (
+                <ChevronDown className="h-5 w-5" />
               )}
             </button>
           </div>
 
-          {/* Expanded details */}
+          {/* Expanded details (scrollable) */}
           {expanded && (
-            <div className="relative z-10 mt-2 space-y-2 text-white">
-              {/* Risk / Availability / Fee / Age pills */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <span
-                  className={`inline-flex items-center h-6 px-2 rounded-full text-[10px] font-semibold text-white ${riskBg}`}
-                >
-                  <AlertTriangle className="h-3.5 w-3.5 mr-1" />
-                  Risk: {actor.risk}
-                </span>
+            <div className="relative z-10 mt-2 text-white">
+              {/* Set a max height so this area can scroll without hiding the header/controls */}
+              <div className="space-y-2 max-h-[150px] sm:max-h-[170px] overflow-y-auto pr-2 overscroll-contain">
+                {/* Risk / Availability / Fee / Age pills */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span
+                    className={`inline-flex items-center h-6 px-2 rounded-full text-[10px] font-semibold text-white ${riskBg}`}
+                  >
+                    <AlertTriangle className="h-3.5 w-3.5 mr-1" />
+                    Risk: {actor.risk}
+                  </span>
 
-                <span className="inline-flex items-center h-6 px-2 rounded-full text-[10px] font-semibold bg-white/90 text-gray-900">
-                  {avail === "Available" ? (
-                    <CheckCircle2 className="h-3.5 w-3.5 mr-1" />
-                  ) : (
-                    <CircleSlash2 className="h-3.5 w-3.5 mr-1" />
-                  )}
-                  {avail}
-                </span>
+                  <span className="inline-flex items-center h-6 px-2 rounded-full text-[10px] font-semibold bg-white/90 text-gray-900">
+                    {avail === "Available" ? (
+                      <CheckCircle2 className="h-3.5 w-3.5 mr-1" />
+                    ) : (
+                      <CircleSlash2 className="h-3.5 w-3.5 mr-1" />
+                    )}
+                    {avail}
+                  </span>
 
-                <span className="inline-flex items-center h-6 px-2 rounded-full text-[10px] font-semibold bg-white/90 text-gray-900">
-                  <DollarSign className="h-3.5 w-3.5 mr-1" />
-                  {actor.fee}
-                </span>
+                  <span className="inline-flex items-center h-6 px-2 rounded-full text-[10px] font-semibold bg-white/90 text-gray-900">
+                    <DollarSign className="h-3.5 w-3.5 mr-1" />
+                    {actor.fee}
+                  </span>
 
-                <span className="inline-flex items-center h-6 px-2 rounded-full text-[10px] font-semibold bg-white/90 text-gray-900">
-                  <User className="h-3.5 w-3.5 mr-1" />
-                  Age {actor.age}
-                </span>
-              </div>
-
-              {/* Reason */}
-              <div className="text-white/90 text-[11px] leading-snug flex items-start">
-                <Info className="h-3.5 w-3.5 mr-2 mt-[1px] flex-none" />
-                <span className="line-clamp-2">{actor.reason}</span>
-              </div>
-
-              {/* Recent works */}
-              <div className="flex items-start text-[11px]">
-                <Clapperboard className="h-3.5 w-3.5 mr-2 flex-none opacity-90" />
-                <div className="flex gap-1.5 flex-wrap">
-                  {actor.recentWorks.map((w, i) => (
-                    <span
-                      key={`${w}-${i}`}
-                      className="px-2 py-0.5 rounded-full bg-white/15 backdrop-blur text-white/90"
-                    >
-                      {w}
+                  {actor.age > 0 && (
+                    <span className="inline-flex items-center h-6 px-2 rounded-full text-[10px] font-semibold bg-white/90 text-gray-900">
+                      <User className="h-3.5 w-3.5 mr-1" />
+                      Age {actor.age}
                     </span>
-                  ))}
+                  )}
+                </div>
+
+                {/* Reason (no clamp so the scroll reveals all text) */}
+                <div className="text-white/90 text-[11px] leading-snug flex items-start">
+                  <Info className="h-3.5 w-3.5 mr-2 mt-[1px] flex-none" />
+                  <span>{actor.reason}</span>
+                </div>
+
+                {/* Recent works — horizontal scroll if many */}
+                <div className="flex items-start text-[11px]">
+                  <Clapperboard className="h-3.5 w-3.5 mr-2 flex-none opacity-90" />
+                  <div
+                    className="inline-flex gap-1.5 pr-2 overflow-x-auto whitespace-nowrap"
+                    role="region"
+                    aria-label="Recent works"
+                  >
+                    {actor.recentWorks.map((w, i) => (
+                      <span
+                        key={`${w}-${i}`}
+                        className="px-2 py-0.5 rounded-full bg-white/15 backdrop-blur text-white/90"
+                      >
+                        {w}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Actions */}
-          <div className="relative z-10 mt-3 flex items-center justify-between">
-            <button
-              type="button"
-              onClick={onAccept}
-              className="inline-flex items-center gap-2 rounded-full bg-white text-gray-900 h-9 px-4 text-[12px] font-medium shadow-sm hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
-            >
-              <Check className="h-4 w-4" />
-              Accept
-            </button>
+          {/* Actions: removed Accept, keep Re-suggest */}
+          <div className="relative z-10 mt-3 flex items-center justify-end">
             <button
               type="button"
               onClick={onResuggest}

@@ -9,17 +9,7 @@ import {
   FileText,
 } from "lucide-react";
 
-export type CharacterProfile = {
-  id: string;
-  name: string;
-  role: "Lead" | "Supporting";
-  scenes: number[];
-  age: number;
-  race: string;
-  gender: string;
-  personality: string[];
-  description: string;
-};
+import { CharacterProfile } from "@/types/character";
 
 const InitialsBox = ({ name }: { name: string }) => {
   const initials = name
@@ -66,21 +56,30 @@ export default function CharacterDetail({
 
       <div className="my-4 h-px w-full bg-gray-200" />
 
-      {/* Rows: icon | label | value (scroll if long) */}
+      {/* Rows: icon | label | value */}
       <ul className="space-y-2 overflow-y-auto pr-1">
+        {/* Appearance — now horizontal scroll */}
         <li className="flex items-start gap-3">
           <Clapperboard className="h-4 w-4 text-gray-500 mt-0.5" />
           <div className="flex items-start gap-3 w-full">
             <div className={labelCls}>Appearance</div>
-            <div className="flex-1 flex flex-wrap gap-2">
-              {character.scenes.map((s) => (
-                <span
-                  key={s}
-                  className="px-2 py-0.5 text-[11px] rounded-full bg-gray-100 text-gray-800"
-                >
-                  Scene {s}
-                </span>
-              ))}
+
+            {/* scroller */}
+            <div
+              className="flex-1 overflow-x-auto"
+              role="region"
+              aria-label="Scene appearances"
+            >
+              <div className="inline-flex gap-2 pr-2 whitespace-nowrap">
+                {character.scenes.map((s) => (
+                  <span
+                    key={s}
+                    className="px-2 py-0.5 text-[11px] rounded-full bg-gray-100 text-gray-800"
+                  >
+                    Scene {s}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </li>
@@ -109,19 +108,28 @@ export default function CharacterDetail({
           </div>
         </li>
 
+        {/* Personality — now horizontal scroll */}
         <li className="flex items-start gap-3">
           <Sparkles className="h-4 w-4 text-gray-500 mt-0.5" />
           <div className="flex items-start gap-3 w-full">
             <div className={labelCls}>Personality</div>
-            <div className="flex-1 flex flex-wrap gap-2">
-              {character.personality.map((p, i) => (
-                <span
-                  key={`${p}-${i}`}
-                  className="px-2 py-0.5 text-[11px] rounded-full bg-gray-100 text-gray-800"
-                >
-                  {p}
-                </span>
-              ))}
+
+            {/* scroller */}
+            <div
+              className="flex-1 overflow-x-auto"
+              role="region"
+              aria-label="Personality traits"
+            >
+              <div className="inline-flex gap-2 pr-2 whitespace-nowrap">
+                {character.personality.map((p, i) => (
+                  <span
+                    key={`${p}-${i}`}
+                    className="px-2 py-0.5 text-[11px] rounded-full bg-gray-100 text-gray-800"
+                  >
+                    {p}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </li>

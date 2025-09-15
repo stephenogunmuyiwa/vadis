@@ -1,7 +1,6 @@
 // components/shot/ShotScroller.tsx
 "use client";
 
-import { RefObject } from "react";
 import type { Shot } from "@/types/film";
 import ShotPage from "./ShotPage";
 
@@ -12,6 +11,9 @@ interface ShotScrollerProps {
   currentShotIdx: number;
   setCurrentShotIdx: (n: number) => void; // kept for parity, though observer lives in parent
   shotsScrollRef: RefLike<HTMLDivElement>;
+  projectId?: string;
+  sceneId?: string | null;
+  userEmail?: string;
 }
 
 export default function ShotScroller({
@@ -19,6 +21,9 @@ export default function ShotScroller({
   currentShotIdx,
   setCurrentShotIdx, // not used inside (observer is in parent) but kept to avoid changing parent logic
   shotsScrollRef,
+  projectId,
+  sceneId,
+  userEmail,
 }: ShotScrollerProps) {
   return (
     <section className="flex-1 ml-[50px] mr-[50px] min-w-0 min-h-0 overflow-hidden flex flex-col">
@@ -44,7 +49,12 @@ export default function ShotScroller({
             data-shot-index={idx}
             className="snap-start snap-always"
           >
-            <ShotPage shot={shot} />
+            <ShotPage
+              shot={shot}
+              projectId={projectId}
+              sceneId={sceneId ?? undefined}
+              userEmail={userEmail}
+            />
           </article>
         ))}
       </div>

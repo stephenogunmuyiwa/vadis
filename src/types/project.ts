@@ -39,6 +39,7 @@ export type SceneRow = {
   screentime: number;    // seconds
   location: string;
   estimate_budget: number;
+  is_analyzed: boolean;
 };
 
 export type ListScenesResponse = {
@@ -54,6 +55,15 @@ export type SceneShotDTO = {
   content: string;
   image_url?: string | null;
 };
+export type SceneCharacter = {
+  name: string;
+  level: "main" | "supporting" | "background" | string; // keep open-ended
+  description: string;
+  estimated_age: number | null;
+  gender: "male" | "female" | "" | string;              // allow other values if they appear
+  personality: string[];
+  race: string;
+};
 
 export type SceneAnalysisDTO = {
   id: string;               // "1"
@@ -64,10 +74,23 @@ export type SceneAnalysisDTO = {
   estimate_budget: number;  // number
   content: string;
   shots: SceneShotDTO[];
+  characters?: SceneCharacter[];
 };
 
 export type AnalyzeSceneResponse = {
   ok: boolean;
   data?: SceneAnalysisDTO;
   error?: string;
+};
+
+export type DeleteProjectPayload = {
+  projectId: string;
+  userEmail: string;
+};
+
+export type DeleteProjectResponse = {
+  ok: boolean;
+  message?: string;
+  error?: string;
+  stats?: unknown;
 };

@@ -4,6 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { LayoutDashboard, FileText, LogOut } from "lucide-react";
+import { Role } from "@/types/session";
+import { useRouter } from "next/navigation";
+import { logout } from "@/lib/api";
 
 type Crumb = { label: string; href?: string };
 type TabKey = "dashboard" | "contract" | "exit" | (string & {});
@@ -30,17 +33,16 @@ export default function TopBar({
   brand,
   crumbs,
   tabs = [
-    {
-      key: "dashboard",
-      label: "Dashboard",
-      icon: <LayoutDashboard className="h-4 w-4" />,
-    },
-    {
-      key: "contract",
-      label: "Contract",
-      icon: <FileText className="h-4 w-4" />,
-    },
-    { key: "exit", label: "Exit", icon: <LogOut className="h-4 w-4" /> },
+    // {
+    //   key: "dashboard",
+    //   label: "Dashboard",
+    //   icon: <LayoutDashboard className="h-4 w-4" />,
+    // },
+    // {
+    //   key: "contract",
+    //   label: "Contract",
+    //   icon: <FileText className="h-4 w-4" />,
+    // },
   ],
   activeTab,
   onTabChange,
@@ -55,7 +57,7 @@ export default function TopBar({
   const brandLabel = brand?.label ?? "VadisAI production";
   const brandHref = brand?.href ?? "/";
   const brandLogo = brand?.logoSrc ?? "/logo.svg"; // replace with your logo path
-
+  const router = useRouter();
   const crumbList: Crumb[] = crumbs ?? [];
 
   return (
@@ -125,6 +127,23 @@ export default function TopBar({
               </button>
             );
           })}
+          <button
+            type="button"
+            onClick={async () => {
+              await logout();
+              router.replace("/");
+            }}
+            className={[
+              "h-8 px-3 inline-flex items-center gap-2 rounded-full text-[12px] font-medium",
+              "border transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300",
+              "bg-gray-100 text-gray-800 border-gray-200 hover:bg-white",
+            ].join(" ")}
+          >
+            <span className={"text-gray-700"}>
+              <LogOut className="h-4 w-4" />
+            </span>
+            Log out
+          </button>
         </div>
       </div>
     </header>

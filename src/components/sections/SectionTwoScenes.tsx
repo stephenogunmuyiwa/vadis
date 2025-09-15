@@ -22,6 +22,10 @@ export default function SectionTwoScenes({
   );
 
   const count = scenes.length;
+  const analyzedCount = useMemo(
+    () => scenes.filter((s) => s.is_analyzed).length,
+    [scenes]
+  );
 
   const goPrev = () => {
     if (count === 0) return;
@@ -52,11 +56,25 @@ export default function SectionTwoScenes({
           <span className="text-[14px] sm:text-[13px] font-semibold text-gray-900">
             Extracted Scenes
           </span>
+
+          {/* total scenes (red pill — existing) */}
           <span
             className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium bg-[#de1719] text-white"
-            aria-label={`Number of extracted scenes: ${count}`}
+            aria-label={`Total scenes: ${count}`}
           >
             {count}
+          </span>
+
+          {/* analyzed scenes (green pill — new) */}
+          <span className="text-[14px] sm:text-[13px] font-semibold text-gray-900">
+            Analyzed Scenes
+          </span>
+          <span
+            className="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium bg-green-500 text-white"
+            aria-label={`Analyzed scenes: ${analyzedCount}`}
+            title="Analyzed scenes"
+          >
+            {analyzedCount}
           </span>
         </div>
 
@@ -116,12 +134,18 @@ export default function SectionTwoScenes({
                 >
                   <div
                     className={[
-                      "text-[11px]",
-                      selected ? "text-[#FFFFFFFF]" : "text-gray-500 ",
+                      "flex items-center justify-between text-[11px]",
+                      selected ? "text-[#FFFFFFFF]" : "text-gray-500",
                     ].join(" ")}
                   >
-                    Scene {s.id}
+                    <span>Scene {s.id}</span>
+                    {s.is_analyzed && (
+                      <span className="ml-2 inline-flex items-center rounded-full bg-green-500 px-2 py-0.5 text-[10px] font-medium text-white">
+                        Analyzed
+                      </span>
+                    )}
                   </div>
+
                   <div className="mt-1 line-clamp-2 text-[12px] font-medium">
                     {s.title || "Untitled scene"}
                   </div>
