@@ -32,7 +32,7 @@ export async function rankSets(params: {
       body: JSON.stringify({
         userEmail: params.userEmail,
         projectId: params.projectId,
-        ...(params.topK ? { topK: params.topK } : {}),
+        topK: params.topK?? 10
       }),
     }
   );
