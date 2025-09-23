@@ -3,7 +3,7 @@ import { fetchSceneCharacters } from "@/app/api/shared/sceneCharacters";
 import {
   CharacterProfile,
   SceneCharactersAPI,
-  SuggestedActor,
+  suggested_actor,
 } from "@/types/character";
 import { SceneLite } from "@/types/scene";
 
@@ -46,34 +46,18 @@ const computeRisk = (prop?: string): "Low" | "Medium" | "High" => {
   return "Low";
 };
 
-const toSuggested = (sa?: SceneCharactersAPI["characters"][number]["suggested_actor"]): SuggestedActor | undefined => {
-  if (!sa || !sa.actor_name) return undefined;
+const toSuggested = (sa?: SceneCharactersAPI["characters"][number]["suggested_actor"]): suggested_actor | undefined => {
+  if (!sa || !sa.name) return undefined;
 
-  const traits = sa.matching_traits || [];
-  const traitLine =
-    traits.length > 0 ? `Matches ${traits.length} trait${traits.length > 1 ? "s" : ""}: ${traits.join(", ")}` : "";
 
-  const propaganda = (sa.recent_propaganda || "").trim();
-  const reason = [traitLine, propaganda].filter(Boolean).join(" • ");
 
   return {
-    name: titleCase(sa.actor_name),
-    avatarUrl: sa.image_url || null,
-    note: (sa.movie_personality && sa.movie_personality.length > 0)
-      ? `Persona: ${sa.movie_personality.join(", ")}`
-      : undefined,
-    risk: computeRisk(sa.recent_propaganda),
-    reason: reason || "Suggested based on character traits.",
-    available: "Available", // backend has no discrete availability yet
-    fee: usd(sa.average_amount_charged_to_film),
-    age: 0, // unknown
-    recentWorks: (sa.movies_played_in || []).map(titleCase),
-
-    // extras for internal tie-break
-    matchCount: sa.matching_traits_count ?? traits.length,
-    matchingTraits: traits,
-    moviePersonality: sa.movie_personality || [],
-    moviesPlayedIn: sa.movies_played_in || [],
+    name: titleCase(sa.name),
+    avatarUrl: sa.avatarUrl || null,
+    risk: computeRisk(sa.risk),
+    fee: sa.fee,
+    age: sa.age, // unknown
+    recentWorks: sa.recentWorks,
   };
 };
 
@@ -123,14 +107,14 @@ export function useSceneCharactersStream(args: {
       gender: item.gender || "—",
       personality: item.personality ?? [],
       description: item.description || "—",
-      suggestedActor: toSuggested(item.suggested_actor),
+      suggested_actor: toSuggested(item.suggested_actor),
     };
   };
 
-  const betterSuggestion = (a?: SuggestedActor, b?: SuggestedActor) => {
+  const betterSuggestion = (a?: suggested_actor, b?: suggested_actor) => {
     if (a && b) {
-      const am = a.matchCount ?? 0;
-      const bm = b.matchCount ?? 0;
+      const am = 0;
+      const bm = 0;
       return bm > am ? b : a;
     }
     return a ?? b;
@@ -149,7 +133,7 @@ export function useSceneCharactersStream(args: {
       gender: a.gender !== "—" ? a.gender : b.gender,
       description: a.description !== "—" ? a.description : b.description,
       personality: Array.from(personalitySet),
-      suggestedActor: betterSuggestion(a.suggestedActor, b.suggestedActor),
+      suggested_actor: betterSuggestion(a.suggested_actor, b.suggested_actor),
     };
   };
 

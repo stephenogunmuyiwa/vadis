@@ -8,23 +8,13 @@ export type Availability =
   | "Busy"
   | "Unavailable";
 
-export type SuggestedActor = {
+export type suggested_actor = {
   name: string;
   avatarUrl?: string | null;
-  note?: string;
-  rating?: number;
-  risk: "Low" | "Medium" | "High";
-  reason: string;
-  available: Availability;     // <-- unified here
-  fee: string;
-  age: number;
-  recentWorks: string[];
-
-  // optional extras
-  matchCount?: number;
-  matchingTraits?: string[];
-  moviePersonality?: string[];
-  moviesPlayedIn?: string[];
+  risk?: "Low" | "Medium" | "High";
+  fee?: string;
+  age?: number;
+  recentWorks?: string[];
 };
 
 export type CharacterProfile = {
@@ -39,7 +29,7 @@ export type CharacterProfile = {
   description: string;
 
   // NEW
-  suggestedActor?: SuggestedActor;
+  suggested_actor?: suggested_actor;
 };
 
 /** Raw payload from /scene/characters */
@@ -60,16 +50,7 @@ export type SceneCharactersAPI = {
     description?: string;
 
     // NEW — as provided by your backend
-    suggested_actor?: {
-      actor_name?: string;
-      average_amount_charged_to_film?: number | null;
-      image_url?: string | null;
-      matching_traits?: string[];
-      matching_traits_count?: number;
-      movie_personality?: string[];
-      movies_played_in?: string[];
-      recent_propaganda?: string;
-    };
+    suggested_actor?: suggested_actor;
   }>;
   error?: string;
 };

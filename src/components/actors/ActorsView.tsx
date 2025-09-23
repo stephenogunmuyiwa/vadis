@@ -6,7 +6,7 @@ import CharacterDetail from "@/components/actors/CharacterDetail";
 import SuggestedActorCard from "@/components/actors/SuggestedActorCard";
 import { useScenes } from "@/hooks/production/useScenes";
 import { useSceneCharactersStream } from "@/hooks/production/useSceneCharactersStream";
-import { CharacterProfile, SuggestedActor } from "@/types/character";
+import { CharacterProfile, suggested_actor } from "@/types/character";
 
 type RoleFilter = "All" | "Lead" | "Supporting";
 
@@ -52,13 +52,10 @@ export default function ActorsView({
     [stream.characters, roleFilter]
   );
 
-  const fallbackSuggestion: SuggestedActor = {
+  const fallbackSuggestion: suggested_actor = {
     name: "—",
     avatarUrl: null,
-    note: "No suggestion available yet.",
     risk: "Low",
-    reason: "—",
-    available: "On hold",
     fee: "—",
     age: 0,
     recentWorks: [],
@@ -152,8 +149,9 @@ export default function ActorsView({
 
         <div className="flex flex-col gap-8 items-stretch">
           {displayed.map((ch) => {
-            const suggestion: SuggestedActor =
-              ch.suggestedActor ?? fallbackSuggestion;
+            const suggestion: suggested_actor =
+              ch.suggested_actor ?? fallbackSuggestion;
+            console.log("boom", suggestion);
             return (
               <div
                 key={ch.id}

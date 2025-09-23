@@ -8,12 +8,14 @@ interface Props {
   scenes: SceneRow[]; // ⬅️ real scenes
   activeSceneId: string | null; // ⬅️ id of selected scene (or null)
   setActiveSceneId: Dispatch<SetStateAction<string | null>>;
+  analyzing?: boolean;
 }
 
 export default function SectionTwoScenes({
   scenes,
   activeSceneId,
   setActiveSceneId,
+  analyzing = false,
 }: Props) {
   // figure out current index from id
   const idx = useMemo(
@@ -28,6 +30,7 @@ export default function SectionTwoScenes({
   );
 
   const goPrev = () => {
+    if (analyzing) return;
     if (count === 0) return;
     if (idx <= 0) {
       setActiveSceneId(scenes[0].id);
@@ -37,6 +40,7 @@ export default function SectionTwoScenes({
   };
 
   const goNext = () => {
+    if (analyzing) return;
     if (count === 0) return;
     if (idx < 0) {
       setActiveSceneId(scenes[0].id);
@@ -49,7 +53,7 @@ export default function SectionTwoScenes({
 
   return (
     // a bit taller to fit the new card height
-    <section className="h-[120px] w-[calc(100vw-80px)] flex flex-col justify-start">
+    <section className="h-[120px] w-[calc(100vw-220px)] flex flex-col justify-start">
       {/* Row 1: title + count + arrows */}
       <div className="h-[30px] px-4 sm:px-6 flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -82,9 +86,15 @@ export default function SectionTwoScenes({
           <button
             type="button"
             onClick={goPrev}
-            className="h-6 w-6 inline-flex items-center justify-center rounded hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300"
+            disabled={analyzing}
+            className={[
+              "h-6 w-6 inline-flex items-center justify-center rounded hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300",
+              analyzing
+                ? "opacity-50 cursor-not-allowed hover:bg-transparent"
+                : "",
+            ].join(" ")}
             aria-label="Previous scene"
-            title="Previous"
+            title={analyzing ? "Analyzing… can't change scenes" : "Previous"}
           >
             <svg
               viewBox="0 0 20 20"
@@ -98,9 +108,15 @@ export default function SectionTwoScenes({
           <button
             type="button"
             onClick={goNext}
-            className="h-6 w-6 inline-flex items-center justify-center rounded hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300"
+            disabled={analyzing}
+            className={[
+              "h-6 w-6 inline-flex items-center justify-center rounded hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300",
+              analyzing
+                ? "opacity-50 cursor-not-allowed hover:bg-transparent"
+                : "",
+            ].join(" ")}
             aria-label="Next scene"
-            title="Next"
+            title={analyzing ? "Analyzing… can't change scenes" : "Next"}
           >
             <svg
               viewBox="0 0 20 20"
@@ -124,13 +140,22 @@ export default function SectionTwoScenes({
                 <button
                   key={s.id}
                   type="button"
-                  onClick={() => setActiveSceneId(s.id)}
+                  disabled={analyzing}
+                  onClick={() => {
+                    if (!analyzing) setActiveSceneId(s.id); // ⬅️ guard
+                  }}
                   className={[
                     "min-w-[200px] h-[80px] rounded-2xl border px-3 py-2 text-left",
                     selected
                       ? "bg-[radial-gradient(120%_160%_at_95%_0%,#0B64FF_0%,#0A47D4_35%,#08328F_60%,#062355_80%,#031228_100%)] border-[3px] border-[#5C88EFFF] text-[#FFFFFFFF]"
                       : "border-gray-200 bg-gray-50 hover:bg-white",
+                    analyzing ? "opacity-60 cursor-not-allowed" : "",
                   ].join(" ")}
+                  title={
+                    analyzing
+                      ? "Analyzing… can't change scenes"
+                      : `Open Scene ${s.id}`
+                  }
                 >
                   <div
                     className={[

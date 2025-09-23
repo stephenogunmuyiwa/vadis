@@ -7,5 +7,6 @@ export type Shot = {
   characters: Character[];
   vfxAnalysis: string;
   productPlacement?: string;
+  product_scene_url?: string | null;
   short: { title: string; description: string };
 };

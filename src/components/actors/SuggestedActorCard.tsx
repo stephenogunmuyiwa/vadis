@@ -14,25 +14,18 @@ import {
   Info,
 } from "lucide-react";
 import { useState } from "react";
-import { SuggestedActor } from "@/types/character";
+import { suggested_actor } from "@/types/character";
 
 export default function SuggestedActorCard({
   actor,
   onResuggest,
   className,
 }: {
-  actor: SuggestedActor;
+  actor: suggested_actor;
   onResuggest?: () => void;
   className?: string;
 }) {
   const [expanded, setExpanded] = useState(false);
-
-  const avail =
-    typeof actor.available === "boolean"
-      ? actor.available
-        ? "Available"
-        : "Unavailable"
-      : actor.available;
 
   const riskBg =
     actor.risk === "Low"
@@ -70,18 +63,7 @@ export default function SuggestedActorCard({
                 <h3 className="text-[16px] sm:text-[18px] font-semibold truncate">
                   {actor.name}
                 </h3>
-                {typeof actor.rating === "number" && (
-                  <span className="inline-flex items-center gap-1 rounded-full bg-white/90 text-gray-900 h-6 px-2 text-[11px] font-semibold">
-                    <Star className="h-3.5 w-3.5" />
-                    {actor.rating.toFixed(1)}
-                  </span>
-                )}
               </div>
-              {actor.note && (
-                <p className="mt-1 text-[12px] leading-relaxed text-white/85 line-clamp-2">
-                  {actor.note}
-                </p>
-              )}
             </div>
 
             <button
@@ -114,31 +96,14 @@ export default function SuggestedActorCard({
                   </span>
 
                   <span className="inline-flex items-center h-6 px-2 rounded-full text-[10px] font-semibold bg-white/90 text-gray-900">
-                    {avail === "Available" ? (
-                      <CheckCircle2 className="h-3.5 w-3.5 mr-1" />
-                    ) : (
-                      <CircleSlash2 className="h-3.5 w-3.5 mr-1" />
-                    )}
-                    {avail}
-                  </span>
-
-                  <span className="inline-flex items-center h-6 px-2 rounded-full text-[10px] font-semibold bg-white/90 text-gray-900">
                     <DollarSign className="h-3.5 w-3.5 mr-1" />
                     {actor.fee}
                   </span>
 
-                  {actor.age > 0 && (
-                    <span className="inline-flex items-center h-6 px-2 rounded-full text-[10px] font-semibold bg-white/90 text-gray-900">
-                      <User className="h-3.5 w-3.5 mr-1" />
-                      Age {actor.age}
-                    </span>
-                  )}
-                </div>
-
-                {/* Reason (no clamp so the scroll reveals all text) */}
-                <div className="text-white/90 text-[11px] leading-snug flex items-start">
-                  <Info className="h-3.5 w-3.5 mr-2 mt-[1px] flex-none" />
-                  <span>{actor.reason}</span>
+                  <span className="inline-flex items-center h-6 px-2 rounded-full text-[10px] font-semibold bg-white/90 text-gray-900">
+                    <User className="h-3.5 w-3.5 mr-1" />
+                    Age {actor.age}
+                  </span>
                 </div>
 
                 {/* Recent works — horizontal scroll if many */}
@@ -149,7 +114,7 @@ export default function SuggestedActorCard({
                     role="region"
                     aria-label="Recent works"
                   >
-                    {actor.recentWorks.map((w, i) => (
+                    {actor.recentWorks?.map((w, i) => (
                       <span
                         key={`${w}-${i}`}
                         className="px-2 py-0.5 rounded-full bg-white/15 backdrop-blur text-white/90"

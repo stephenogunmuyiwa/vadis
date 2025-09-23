@@ -4,7 +4,14 @@
 import Link from "next/link";
 import { useMemo, useState, useRef, useEffect } from "react";
 import { Search } from "lucide-react";
-import { Home, Layer, People, MoneySend, Subtitle } from "iconsax-react";
+import {
+  Video,
+  Layer,
+  People,
+  MoneySend,
+  Subtitle,
+  Location,
+} from "iconsax-react";
 import { useSceneAnalysis } from "@/hooks/production/useSceneAnalysis";
 
 import LeftRail from "@/components/layout/LeftRail";
@@ -19,6 +26,8 @@ import { useScenes } from "@/hooks/production/useScenes";
 import type { Character, Shot } from "@/types/film";
 import ActorsView from "@/components/actors/ActorsView";
 import FinancesView from "@/components/finances/FinancesView";
+import SetLocations from "@/components/locations/SetLocations";
+import PosterTrailer from "@/components/project-assets/PosterTrailer";
 import SummaryView from "@/components/summary/SummaryView";
 import SceneMetaAsideSkeleton from "@/components/scene/SceneMetaAsideSkeleton";
 import ShotScrollerSkeleton from "@/components/shot/ShotScrollerSkeleton";
@@ -64,10 +73,11 @@ export default function Project({ projectId }: { projectId: string }) {
   }, [createdISO]);
 
   const items = [
-    { key: "SCENE", label: "Scene", icon: Layer },
+    { key: "SCENE", label: "Scene Analysis", icon: Layer },
     { key: "ACTORS", label: "Actors", icon: People },
-    { key: "FINANCES", label: "Finances", icon: MoneySend },
-    // { key: "SUMMARY", label: "Summary", icon: Subtitle },
+    { key: "FINANCES", label: "Finances & ROI", icon: MoneySend },
+    { key: "LOCATION", label: "Set Location", icon: Location },
+    { key: "ASSETS", label: "Trailer & Poster", icon: Video },
   ];
 
   // useEffect(() => {
@@ -130,74 +140,6 @@ export default function Project({ projectId }: { projectId: string }) {
     }
   }, [analyzing, meta, shots.length, activeSceneId, markAnalyzed]);
 
-  const summaryCharacters = [
-    {
-      name: "Ava Cole",
-      role: "Lead",
-      scenes: [1, 2, 5, 9, 12, 18],
-      personality: ["resilient", "driven", "empathetic"],
-    },
-    {
-      name: "Ben Ortega",
-      role: "Supporting",
-      scenes: [1, 3, 6, 10, 14],
-      personality: ["loyal", "protective", "wary"],
-    },
-    {
-      name: "Captain Ruiz",
-      role: "Supporting",
-      scenes: [4, 8, 11],
-      personality: ["authoritative", "stoic"],
-    },
-  ];
-
-  // selected cast mapping (update from your Accept actions later)
-  const selectedCast = [
-    {
-      character: "Ava Cole",
-      actor: "Tessa Thompson",
-      availability: "Available",
-      fee: "$15k / day",
-    },
-    {
-      character: "Ben Ortega",
-      actor: "Diego Luna",
-      availability: "Available",
-      fee: "$20k / day",
-    },
-    {
-      character: "Captain Ruiz",
-      actor: "J.K. Simmons",
-      availability: "On hold",
-      fee: "$25k / day",
-    },
-  ];
-
-  const productPlacements = shots.flatMap((s) =>
-    (s.productPlacement ?? "")
-      .split(",")
-      .map((b) => b.trim())
-      .filter(Boolean)
-      .map((brand) => ({
-        brand,
-        scenes: [activeScene],
-        productType: brand.toLowerCase().includes("nike")
-          ? "Footwear"
-          : brand.toLowerCase().includes("prada")
-          ? "Luxury apparel"
-          : "Apparel",
-        estValue: undefined,
-      }))
-  );
-
-  const synopsis =
-    "A data journalist uncovers a corporate cover-up that spills into the streets, testing loyalties and forcing a public reckoning.";
-  const budgetEstimate = 9_300_000;
-  const revenueEstimate = 23_950_000;
-
-  const runtimeMinutesEstimate = 105;
-  const productionEstimate = { prepWeeks: 6, shootDays: 28, postWeeks: 14 };
-
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#FFFFFFFF] text-gray-900">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(1200px_600px_at_50%_-200px,rgba(255,255,255,0.9),rgba(247,249,252,0.7),rgba(235,239,246,0.6),transparent_80%)]" />
@@ -220,7 +162,7 @@ export default function Project({ projectId }: { projectId: string }) {
         {/* Left rail */}
         <LeftRail items={items} selected={selected} setSelected={setSelected} />
         {/* Right flexible column */}+{" "}
-        <div className="ml-[50px] flex-1 min-h-0 flex flex-col">
+        <div className="ml-[200px] flex-1 min-h-0 flex flex-col">
           {/* SCENES view */}
           {selected === "SCENE" && (
             <>
@@ -240,9 +182,9 @@ export default function Project({ projectId }: { projectId: string }) {
                   scenes={scenes}
                   activeSceneId={activeSceneId}
                   setActiveSceneId={setActiveSceneId}
+                  analyzing={analyzing}
                 />
               )}
-
               {/* Section 3: meta + shots OR empty state */}
               {!activeSceneId ? (
                 <SceneEmpty />
@@ -256,7 +198,6 @@ export default function Project({ projectId }: { projectId: string }) {
               ) : (
                 <section className="flex-1 mt-[5px] min-h-0 px-4 sm:px-6 py-4 overflow-auto bg-[#0000000C]">
                   <div className="w-full h-full flex gap-4">
-                    {/* meta from server */}
                     {/* meta from server */}
                     {meta && (
                       <SceneMetaAside
@@ -296,11 +237,16 @@ export default function Project({ projectId }: { projectId: string }) {
             />
           )}
           {selected === "FINANCES" && (
-            <FinancesView
-              projectCreatedISO=""
-              projectCreatedLabel=""
-              // (optional) pass a scenesCount if you want to mirror your real scenes
-              scenesCount={100}
+            <FinancesView projectId={projectId} userEmail={email || ""} />
+          )}
+          {selected === "LOCATION" && (
+            <SetLocations projectId={projectId} userEmail={email || ""} />
+          )}
+          {selected === "ASSETS" && (
+            <PosterTrailer
+              projectId={projectId}
+              userEmail={email || ""}
+              movieId="matrix-remastered"
             />
           )}
           {/* {selected === "SUMMARY" && (

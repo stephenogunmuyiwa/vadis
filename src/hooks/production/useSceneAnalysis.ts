@@ -73,7 +73,7 @@ export function useSceneAnalysis(projectId: string, sceneId: string | null) {
   }, [refetch]);
 
   const meta = useMemo(() => {
-    const s = (data?.scene ?? data?.data?.scene) as SceneAnalysisDTO | undefined;
+    const s = (data?.scene ?? data?.data?.scene ?? data?.data) as SceneAnalysisDTO | undefined;
     if (!s) return null;
     return {
       id: s.id,

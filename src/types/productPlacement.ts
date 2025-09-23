@@ -17,6 +17,7 @@ project_id: string;
 scene_id: string;
 shot_id: string;
 count: number;
+product_scene_url?: string | null;
 products: ProductPlacementItem[];
 error?: string;
 }
