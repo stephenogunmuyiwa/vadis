@@ -197,7 +197,21 @@ export default function ShotPage({
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
           </button>
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-200 via-indigo-200 to-cyan-200" />
+          <div
+            className="absolute inset-0 flex items-center justify-center bg-gray-200"
+            role="status"
+            aria-live="polite"
+          >
+            <div className="mx-6 text-center text-gray-700">
+              <p className="text-sm font-semibold">
+                Image couldn’t be generated
+              </p>
+              <p className="mt-1 text-xs text-gray-600">
+                Blocked for safety reasons — the scene may contain gory violence
+                or offensive content.
+              </p>
+            </div>
+          </div>
         )}
       </div>
 
