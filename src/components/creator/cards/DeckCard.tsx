@@ -10,13 +10,14 @@ export default function DeckCard({ item }: { item: PitchDeck }) {
       <div className="relative h-28 w-full bg-neutral-100">
         {hasUrl ? (
           <>
-            <iframe
-              src={item.url as string}
-              title={`${item.project_title} deck preview`}
-              className="absolute inset-0 h-full w-full"
-              loading="lazy"
-              sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
-            />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <img
+                src="/pdf_logo.png"
+                alt={`${item.project_title}`}
+                className="h-30 w-full object-cover"
+                loading="lazy"
+              />
+            </div>
             <a
               href={item.url as string}
               target="_blank"

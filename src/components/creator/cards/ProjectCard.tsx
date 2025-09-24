@@ -38,21 +38,28 @@ export default function ProjectCard({ item }: { item: Project }) {
   const preview =
     item.preview_text || item.overview || "No preview available yet.";
 
-  const budgetDisplay =
-    typeof item.estimated_budget === "number"
-      ? new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-          maximumFractionDigits: 0,
-        }).format(item.estimated_budget)
-      : "—";
+  const budgetValue =
+    typeof item.estimated_budget === "number" ? item.estimated_budget : 0;
+  const showBudget = budgetValue > 0;
+  const budgetDisplay = showBudget
+    ? new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0,
+      }).format(budgetValue)
+    : null;
 
-  // Deterministic soft color based on id/title
-  const softBg = useMemo(() => {
-    const key = item.id || item.title || "fallback";
-    const idx = hashString(key) % SOFT_BACKGROUNDS.length;
-    return SOFT_BACKGROUNDS[idx];
-  }, [item.id, item.title]);
+  const sceneCount = Number(item.scene_count ?? 0);
+  const usersCount = Number((item as any)?.users_count ?? 0);
+
+  const metrics = useMemo(
+    () =>
+      [
+        sceneCount > 0 && { icon: "pages" as const, value: sceneCount },
+        usersCount > 0 && { icon: "users" as const, value: usersCount },
+      ].filter(Boolean) as { icon: "pages" | "users"; value: number }[],
+    [sceneCount, usersCount]
+  );
 
   const displayTags = useMemo(() => {
     const tags = Array.isArray(item.tags) ? item.tags : [];
@@ -97,16 +104,27 @@ export default function ProjectCard({ item }: { item: Project }) {
       className="overflow-hidden rounded-2xl border border-neutral-200 bg-white transition hover:border-[#0007CCFF]"
     >
       {/* Header image or soft color */}
-      {poster ? (
-        <img
-          src={poster}
-          alt={`${title} poster`}
-          className="h-40 w-full object-cover"
-          loading="lazy"
-        />
-      ) : (
-        <div className={`h-40 w-full ${softBg}`} />
-      )}
+      {
+        poster && (
+          <img
+            src={poster}
+            alt={`${title} poster`}
+            className="h-40 w-full object-cover"
+            loading="lazy"
+          />
+        )
+        // : (
+        //   <div className="h-40 w-full bg-neutral-200 flex items-center justify-center text-center p-4">
+        //     <div className="text-neutral-700 text-sm">
+        //       <p className="font-medium">You have not generated a poster</p>
+        //       <p className="text-xs text-neutral-600 mt-1">
+        //         Generate a poster from the{" "}
+        //         <span className="font-medium">Poster &amp; Trailer</span> tab.
+        //       </p>
+        //     </div>
+        //   </div>
+        // )
+      }
 
       {/* Column content */}
       <div className="p-5">
@@ -119,10 +137,17 @@ export default function ProjectCard({ item }: { item: Project }) {
         <p className="line-clamp-2 h-10 text-sm text-neutral-500">{preview}</p>
 
         {/* Metrics */}
-        <div className="mt-3 flex items-center gap-4">
-          <Metric icon="pages" value={item.scene_count ?? 0} />
-          <Metric icon="users" value={0} />
-        </div>
+        {metrics.length > 0 && (
+          <div className="mt-3 flex items-center gap-4">
+            {metrics.map((m, i) => (
+              <Metric
+                key={`${item.id}-m-${m.icon}-${i}`}
+                icon={m.icon}
+                value={m.value}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Tags */}
         <div className="mt-4 flex flex-wrap gap-2">
@@ -132,12 +157,14 @@ export default function ProjectCard({ item }: { item: Project }) {
         </div>
 
         {/* Estimated budget */}
-        <div className="mt-4 text-xs text-neutral-500">
-          <span className="font-medium text-neutral-700">
-            Estimated budget:
-          </span>{" "}
-          <span>{budgetDisplay}</span>
-        </div>
+        {showBudget && (
+          <div className="mt-4 text-xs text-neutral-500">
+            <span className="font-medium text-neutral-700">
+              Estimated budget:
+            </span>{" "}
+            <span>{budgetDisplay}</span>
+          </div>
+        )}
       </div>
     </div>
   );
