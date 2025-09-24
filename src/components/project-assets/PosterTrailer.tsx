@@ -255,20 +255,26 @@ export default function PosterTrailer({
             ))}
 
             {/* Generate poster tile (always present in the grid) */}
-            <button
-              type="button"
-              onClick={onGeneratePoster}
-              disabled={genPosterLoading}
-              className="relative aspect-[2/3] rounded-xl ring-1 ring-dashed ring-gray-300 bg-gray-50 flex items-center justify-center hover:bg-gray-100 transition disabled:opacity-50"
-              aria-label="Generate poster"
-            >
-              <div className="flex flex-col items-center gap-2 text-gray-600">
-                <PlusIcon className="h-6 w-6" />
-                <span className="text-sm font-medium">
-                  {genPosterLoading ? "Generating…" : "Generate poster"}
-                </span>
-              </div>
-            </button>
+            {(!hasPoster || genPosterLoading) && (
+              <button
+                type="button"
+                onClick={onGeneratePoster}
+                disabled={genPosterLoading}
+                className="relative aspect-[2/3] rounded-xl ring-1 ring-dashed ring-gray-300 bg-gray-50 flex items-center justify-center hover:bg-gray-100 transition disabled:opacity-60"
+                aria-label="Generate poster"
+              >
+                <div className="flex flex-col items-center gap-2 text-gray-600">
+                  {genPosterLoading ? (
+                    <SpinnerIcon className="h-6 w-6" />
+                  ) : (
+                    <PlusIcon className="h-6 w-6" />
+                  )}
+                  <span className="text-sm font-medium">
+                    {genPosterLoading ? "Generating…" : "Generate poster"}
+                  </span>
+                </div>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -351,6 +357,22 @@ function PlusIcon({ className = "" }: { className?: string }) {
       strokeWidth="1.5"
     >
       <path d="M12 5v14M5 12h14" />
+    </svg>
+  );
+}
+function SpinnerIcon({ className = "" }: { className?: string }) {
+  // Tailwind's animate-spin for a simple loader
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={`animate-spin ${className}`}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="9" className="opacity-20" />
+      <path d="M21 12a9 9 0 0 1-9 9" className="opacity-80" />
     </svg>
   );
 }
