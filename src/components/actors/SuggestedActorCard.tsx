@@ -38,12 +38,15 @@ export default function SuggestedActorCard({
     <aside
       className={["w-[300px] flex-none", className].filter(Boolean).join(" ")}
     >
-      <div className="relative rounded-3xl overflow-hidden h-[300px]">
+      <div
+        className="relative rounded-3xl overflow-hidden h-[300px]"
+        onClick={() => console.log(actor)}
+      >
         {/* Photo */}
-        {actor.avatarUrl ? (
+        {actor.avatar_url ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={actor.avatarUrl}
+            src={actor.avatar_url}
             alt={actor.name}
             className="w-full h-full object-cover"
           />
@@ -130,7 +133,7 @@ export default function SuggestedActorCard({
 
           {/* Actions: removed Accept, keep Re-suggest */}
           <div className="relative z-10 mt-3 flex items-center justify-end">
-            <button
+            {/* <button
               type="button"
               onClick={onResuggest}
               className="h-9 w-9 rounded-full bg-white/15 backdrop-blur text-white flex items-center justify-center hover:bg-white/25 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
@@ -138,7 +141,7 @@ export default function SuggestedActorCard({
               aria-label="Re-suggest actor"
             >
               <RefreshCw className="h-5 w-5" />
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

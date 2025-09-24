@@ -10,7 +10,7 @@ export type Availability =
 
 export type suggested_actor = {
   name: string;
-  avatarUrl?: string | null;
+  avatar_url?: string | null;
   risk?: "Low" | "Medium" | "High";
   fee?: string;
   age?: number;

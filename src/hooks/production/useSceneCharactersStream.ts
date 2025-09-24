@@ -53,7 +53,7 @@ const toSuggested = (sa?: SceneCharactersAPI["characters"][number]["suggested_ac
 
   return {
     name: titleCase(sa.name),
-    avatarUrl: sa.avatarUrl || null,
+    avatar_url: sa.avatar_url || null,
     risk: computeRisk(sa.risk),
     fee: sa.fee,
     age: sa.age, // unknown

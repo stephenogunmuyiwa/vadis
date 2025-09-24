@@ -54,7 +54,7 @@ export default function ActorsView({
 
   const fallbackSuggestion: suggested_actor = {
     name: "—",
-    avatarUrl: null,
+    avatar_url: null,
     risk: "Low",
     fee: "—",
     age: 0,
