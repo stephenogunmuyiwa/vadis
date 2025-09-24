@@ -125,20 +125,22 @@ export default function PlacementsPage() {
     return [{ label: "All genres", value: "all" }, ...opts];
   }, [projects]);
 
-  // apply filters
+  // apply filters — only keep projects that have a poster
   const filtered = React.useMemo(() => {
     const term = q.trim().toLowerCase();
-    return projects.filter((p) => {
-      const titleMatch = !term || pickTitle(p).toLowerCase().includes(term);
-      const tagMatch =
-        genre === "all" ||
-        (p.tags ?? []).some((t) => t.toLowerCase() === genre.toLowerCase());
-      return titleMatch && tagMatch;
-    });
+    return projects
+      .filter((p) => !!pickPoster(p).trim())
+      .filter((p) => {
+        const titleMatch = !term || pickTitle(p).toLowerCase().includes(term);
+        const tagMatch =
+          genre === "all" ||
+          (p.tags ?? []).some((t) => t.toLowerCase() === genre.toLowerCase());
+        return titleMatch && tagMatch;
+      });
   }, [projects, q, genre]);
 
   return (
-    <div>
+    <div className="mt-[50px]">
       <h1 className="text-[15px] font-semibold">Placements</h1>
       <p className="text-xs text-zinc-500">{profileName}</p>
 
@@ -151,9 +153,6 @@ export default function PlacementsPage() {
           className="px-2 py-2 text-sm text-zinc-600 hover:text-zinc-900"
         >
           My deals{" "}
-          <span className="ml-1 rounded-full bg-zinc-200 px-2 py-0.5 text-[11px]">
-            2
-          </span>
         </a>
       </div>
 
@@ -180,7 +179,7 @@ export default function PlacementsPage() {
             {Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={i}
-                className="h-40 animate-pulse rounded-2xl border bg-white"
+                className="h-70 animate-pulse rounded-2xl border border-[#DCDCDCFF] bg-white"
               />
             ))}
           </div>

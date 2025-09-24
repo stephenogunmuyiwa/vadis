@@ -53,6 +53,21 @@ export default function ProjectCard({ item }: { item: Project }) {
     const idx = hashString(key) % SOFT_BACKGROUNDS.length;
     return SOFT_BACKGROUNDS[idx];
   }, [item.id, item.title]);
+
+  const displayTags = useMemo(() => {
+    const tags = Array.isArray(item.tags) ? item.tags : [];
+    const seen = new Set<string>();
+    const out: string[] = [];
+    for (const raw of tags) {
+      const t = String(raw ?? "").trim();
+      const k = t.toLowerCase();
+      if (!t || seen.has(k)) continue; // dedupe case-insensitively
+      seen.add(k);
+      out.push(t);
+    }
+    return out.slice(0, 4);
+  }, [item.tags]);
+
   const goToProject = () => {
     const createdDate = new Date(
       item.created_date ? item.created_date * 1000 : 0
@@ -111,8 +126,8 @@ export default function ProjectCard({ item }: { item: Project }) {
 
         {/* Tags */}
         <div className="mt-4 flex flex-wrap gap-2">
-          {(item.tags || []).slice(0, 4).map((t) => (
-            <Tag key={t}>{t}</Tag>
+          {displayTags.map((t, i) => (
+            <Tag key={`${item.id ?? title ?? "proj"}-${t}-${i}`}>{t}</Tag>
           ))}
         </div>
 
