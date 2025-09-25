@@ -126,7 +126,7 @@ export default function ShotPage({
       });
 
       if (res.ok) {
-        console.log("Saved note:", res.data);
+        // console.log("Saved note:", res.data);
       } else {
       }
     } catch (err) {
@@ -165,7 +165,7 @@ export default function ShotPage({
       });
 
       if (res.ok) {
-        console.log("Edited image:", res.image_url);
+        // console.log("Edited image:", res.image_url);
         setBannerUrl(withCacheBuster(res.image_url));
 
         // optionally, show the new image somewhere in UI

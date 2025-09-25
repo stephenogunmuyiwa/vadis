@@ -151,7 +151,7 @@ export default function ActorsView({
           {displayed.map((ch) => {
             const suggestion: suggested_actor =
               ch.suggested_actor ?? fallbackSuggestion;
-            console.log("boom", suggestion);
+            // console.log("boom", suggestion);
             return (
               <div
                 key={ch.id}
@@ -163,7 +163,7 @@ export default function ActorsView({
                 <SuggestedActorCard
                   actor={suggestion}
                   // onAccept={() =>
-                  //   console.log(
+                  //   // console.log(
                   //     "Accepted suggestion for",
                   //     ch.name,
                   //     suggestion.name

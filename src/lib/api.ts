@@ -38,6 +38,6 @@ export async function getSession(): Promise<Session> {
 }
 
 export async function logout() {
-    console.log("Logging out - client side");
+    // console.log("Logging out - client side");
   await fetch("/api/session", { method: "DELETE" });
 }

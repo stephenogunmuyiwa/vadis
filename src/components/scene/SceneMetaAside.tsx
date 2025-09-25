@@ -33,7 +33,7 @@ export default function SceneMetaAside({ meta }: { meta: SceneMeta }) {
         {/* Title */}
         <h2
           className="text-[15px] sm:text-[20px] font-semibold text-gray-900"
-          onClick={() => console.log(meta)}
+          onClick={() => // console.log(meta)}
         >
           {meta.title}
         </h2>

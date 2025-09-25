@@ -196,7 +196,11 @@ export default function PlacementsPage() {
             {filtered.map((p, i) => (
               <PlacementCard
                 key={p.id ?? `proj-${i}`}
-                href={`./placements/${p.id ?? `proj-${i}`}`}
+                href={`./placements/${p.id ?? `proj-${i}`}${
+                  p.creator
+                    ? `?creatorEmail=${encodeURIComponent(p.creator)}`
+                    : ""
+                }`}
                 studio={p.creator_name || p.creator}
                 title={pickTitle(p)}
                 synopsis={pickSynopsis(p)}
