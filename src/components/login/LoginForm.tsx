@@ -3,7 +3,11 @@ import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { login } from "@/lib/api";
 
-export default function LoginForm() {
+type Props = {
+  onShowRequestDemo?: () => void;
+};
+
+export default function LoginForm({ onShowRequestDemo }: Props) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -94,7 +98,10 @@ export default function LoginForm() {
 
         <p className="mt-3 text-center text-xs text-neutral-600">
           Don't have an account?{" "}
-          <a className="underline underline-offset-2 text-violet-600" href="#">
+          <a
+            onClick={onShowRequestDemo}
+            className="underline underline-offset-2 text-violet-600"
+          >
             Request Demo
           </a>
         </p>

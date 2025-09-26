@@ -1,7 +1,26 @@
 "use client";
 import LoginForm from "@/components/login/LoginForm";
+import RequestDemoForm from "@/components/login/RequestDemoForm";
+import { useMemo, useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const initialView = useMemo(() => {
+    const v = (searchParams?.get("view") || "").toLowerCase();
+    return v === "request-demo" ? "request-demo" : "login";
+  }, [searchParams]);
+
+  const [view, setView] = useState<"login" | "request-demo">(initialView);
+
+  // Keep URL in sync (no extra history entries)
+  useEffect(() => {
+    const next = new URL(window.location.href);
+    next.searchParams.set("view", view);
+    router.replace(next.toString());
+  }, [view, router]);
   return (
     <main className="mx-auto grid min-h-screen w-full grid-cols-1 items-stretch gap-10 p-4 md:grid-cols-2 md:p-8 bg-[#EBEBEBFF] text-neutral-900">
       <section className="relative hidden overflow-hidden rounded-3xl bg-gradient-to-b from-[#934ccf] via-[#582398] to-[#050505] p-10 md:flex">
@@ -20,7 +39,9 @@ export default function LoginPage() {
             Get Started with VadisAI
           </h1>
           <p className="text-neutral-300">
-            Don't have an account? Request a demo.
+            {view === "login"
+              ? "Don't have an account? Request a demo."
+              : "Already using VadisAI? Sign in to continue."}
           </p>
 
           <ol className="mt-10 space-y-3">
@@ -67,7 +88,11 @@ export default function LoginPage() {
       </section>
 
       <section className="flex items-center justify-center">
-        <LoginForm />
+        {view === "login" ? (
+          <LoginForm onShowRequestDemo={() => setView("request-demo")} />
+        ) : (
+          <RequestDemoForm onShowSignIn={() => setView("login")} />
+        )}
       </section>
     </main>
   );
