@@ -1,7 +1,7 @@
 // src/config/env.ts
 export const ENV = {
   API_BASE: process.env.NEXT_PUBLIC_API_BASE ?? "",
-  DEFAULT_EMAIL: process.env.NEXT_PUBLIC_DEFAULT_EMAIL ?? "user@example.com",
+  SUPPORT_EMAIL: process.env.NEXT_PUBLIC_SUPPORT_EMAIL ?? "",
 };
 
 if (!ENV.API_BASE) {

@@ -47,7 +47,7 @@ export function BrandTopbar({
     currentProfile.name;
 
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex mt-[50px] items-center justify-between">
       <div>
         <h1 className="text-[15px] font-semibold">{title}</h1>
         <p className="text-xs text-zinc-500">{label}</p>

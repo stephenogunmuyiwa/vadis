@@ -38,6 +38,25 @@ export async function getMovieDetails(params: {
   return (await res.json()) as MovieDetailsResponse;
 }
 
+// lib/investor/api.ts
+export async function requestTrailer(
+  payload: { userEmail: string; projectId: string },
+  endpoint = "/trailers/request"
+): Promise<{ ok: boolean; error?: string }> {
+  const res = await fetch(`${BASE}${endpoint}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    cache: "no-store",
+    body: JSON.stringify(payload),
+  });
+  try {
+    return await res.json();
+  } catch {
+    return { ok: false, error: "Invalid JSON from server" };
+  }
+}
+
+
 // Generate poster(s)
 export async function generatePoster(params: {
   userEmail: string;

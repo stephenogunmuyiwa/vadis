@@ -8,6 +8,7 @@ import RecentTransactions, { BrandDeal } from "./RecentTransactions";
 import FundingProgressTable from "./FundingProgressTable";
 import { getFinanceBundle } from "@/app/api/shared/getFinanceImpressions";
 import type { FinanceBundle } from "@/types/finance";
+import { ENV } from "@/config/env";
 
 export default function FinancesView({
   userEmail,
@@ -19,14 +20,19 @@ export default function FinancesView({
   const [bundle, setBundle] = useState<FinanceBundle | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [actionMsg, setActionMsg] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
       const res = await getFinanceBundle({ userEmail, projectId });
-      if (res.ok) setBundle(res.data);
-      else setError(res.error);
+      if (res.ok) {
+        setBundle(res.data);
+      } else {
+        setError(res.error);
+      }
     } catch (e: any) {
       setError(e?.message || "Failed to load finance data.");
     } finally {
@@ -83,6 +89,56 @@ export default function FinancesView({
     [bundle]
   );
 
+  /* ---------- approval wiring ---------- */
+  function inferBrandId(row: BrandDeal): string | null {
+    // Try common shapes coming from various backends
+    return (row as any).brand_id || null;
+  }
+
+  const callApproval = useCallback(
+    async (row: BrandDeal, isApproved: boolean) => {
+      const base = ENV.API_BASE;
+      const brandId = inferBrandId(row);
+      if (!brandId) {
+        setActionMsg("Missing brandId/brandProfileId on row.");
+        return;
+      }
+
+      try {
+        setBusyId(row.id);
+        setActionMsg(null);
+
+        const qs = new URLSearchParams({
+          creatorEmail: userEmail,
+          projectId,
+          brandId: String(brandId),
+          isApproved: String(isApproved), // backend accepts true/false, yes/no, etc.
+        }).toString();
+
+        const res = await fetch(`${base}/brands/deals/approval?${qs}`, {
+          method: "GET",
+          cache: "no-store",
+        });
+
+        const json = await res.json().catch(() => ({} as any));
+        if (!res.ok || !json?.ok) {
+          const msg = json?.error || `Approval failed (${res.status})`;
+          throw new Error(msg);
+        }
+
+        setActionMsg(
+          isApproved ? "Placement accepted." : "Placement rejected."
+        );
+        await fetchData(); // refresh finance view
+      } catch (e: any) {
+        setActionMsg(e?.message || "Failed to update approval state.");
+      } finally {
+        setBusyId(null);
+      }
+    },
+    [projectId, userEmail, fetchData]
+  );
+
   return (
     <div className="flex-1 min-h-0 flex flex-col overflow-y-auto bg-[#ECEFF3]">
       <header className="sticky top-0 z-10 bg-[#ECEFF3]/80 backdrop-blur">
@@ -95,6 +151,9 @@ export default function FinancesView({
               <p className="text-sm text-gray-500">
                 Track your ROI, investments, engagements and trendings.
               </p>
+              {actionMsg && (
+                <div className="mt-2 text-xs text-gray-700">{actionMsg}</div>
+              )}
             </div>
 
             <button
@@ -210,7 +269,11 @@ export default function FinancesView({
             {loading ? (
               <DealsTableSkeleton />
             ) : (
-              <RecentTransactions items={deals} />
+              <RecentTransactions
+                items={deals}
+                onAccept={(row) => callApproval(row, true)}
+                onReject={(row) => callApproval(row, false)}
+              />
             )}
           </div>
         </section>
@@ -220,6 +283,7 @@ export default function FinancesView({
           loading={loading}
           title="Investments"
         />
+
         {error && (
           <div className="mt-4 text-sm text-rose-600">
             Error loading finance data: {error}
@@ -273,6 +337,7 @@ function DealsTableSkeleton() {
               "Value",
               "Category",
               "AI Suggested",
+              "Approval", // keep header aligned with table
               "Actions",
             ].map((h) => (
               <th key={h} className="px-4 sm:px-6 py-3 font-medium">
@@ -301,6 +366,9 @@ function DealsTableSkeleton() {
               </td>
               <td className="px-4 sm:px-6 py-3">
                 <div className="h-5 w-24 bg-gray-200 rounded-md animate-pulse" />
+              </td>
+              <td className="px-4 sm:px-6 py-3">
+                <div className="h-5 w-16 bg-gray-200 rounded-full animate-pulse" />
               </td>
               <td className="px-4 sm:px-6 py-3">
                 <div className="ml-auto flex justify-end gap-2">

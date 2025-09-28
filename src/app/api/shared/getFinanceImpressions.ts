@@ -59,8 +59,10 @@ export function normalizeFinanceImpressions(
   const brandDeals: BrandDealRow[] = [];
   for (const bd of d.brand_deals ?? []) {
     const ai = bd.is_ai_suggested ? "Yes" : "No";
+    const approved = bd.is_approved ? "yes": "No";
     for (const p of bd.products ?? []) {
       brandDeals.push({
+        brand_id: p.brand_id,
         id: p.id,
         brandName: bd.brand_name || p.brand_name,
         itemName: p.item_name,
@@ -68,6 +70,7 @@ export function normalizeFinanceImpressions(
         value: p.value ?? 0,
         category:p.category ?? "Uncategorized",
         aiSuggested: ai,
+        approved: approved,
         sceneImageUrl: p.product_scene_url || undefined,
       });
     }
@@ -76,11 +79,11 @@ export function normalizeFinanceImpressions(
   // investments
   const investments: InvestmentRow[] = (d.investments ?? []).map((i) => ({
     id: i.id,
-    investorId: i.investor_id,
+    investorId: i.investor_email,
     name: i.name,
     value: i.value,
     meetingDate: i.meeting_date,
-    meetingLink: i.meeting_link,
+    meetingLink: i.meeting_url,
     requestPitch: i.request_pitch,
     comments: i.comments,
   }));
@@ -103,5 +106,7 @@ export async function getFinanceBundle(
   payload: FinanceImpressionsRequest
 ): Promise<{ ok: true; data: FinanceBundle } | { ok: false; error: string }> {
   const raw = await fetchFinanceImpressions(payload);
+
+        console.log(raw);
   return normalizeFinanceImpressions(raw);
 }

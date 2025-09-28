@@ -30,9 +30,9 @@ export type FinanceBrandDealRaw = {
 export type FinanceInvestmentRaw = {
   comments?: string;
   id: string;
-  investor_id: string;
+  investor_email: string;
   meeting_date?: number;
-  meeting_link?: string;
+  meeting_url?: string;
   name: string;
   request_pitch?: boolean;
   value: number;
@@ -71,6 +71,7 @@ export type SocialImpressions = {
 };
 
 export type BrandDealRow = {
+  brand_id: string;
   id: string;
   brandName: string;
   itemName: string;
@@ -78,6 +79,7 @@ export type BrandDealRow = {
   value: number;
   category: string; // <-- required to match RecentTransactions.BrandDeal
   aiSuggested: string;
+  approved: string;
   sceneImageUrl?: string;
 };
 

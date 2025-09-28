@@ -4,9 +4,10 @@ import { useEffect, useState, ReactNode } from "react";
 import {
   getMovieDetails,
   generatePoster,
-  generateTrailer,
+  requestTrailer,
   type MovieDetails,
 } from "@/app/api/shared/getAssets";
+import { toast } from "sonner";
 
 type Props = {
   userEmail: string;
@@ -95,14 +96,30 @@ export default function PosterTrailer({
   async function onGenerateTrailer() {
     try {
       setGenTrailerLoading(true);
-      // const res = await generateTrailer({ userEmail, projectId, movieId });
-      // if (res.ok) {
-      //   setDetails((prev) =>
-      //     prev ? { ...prev, trailer_url: withBuster(res.trailer_url) } : prev
-      //   );
-      //   setPlayerOpen(true);
-      // } else {
-      // }
+
+      const toastId = toast.loading("Submitting trailer request…");
+
+      // Kick off API call and a 3s UX delay in parallel
+      const [res] = await Promise.all([
+        requestTrailer({ userEmail, projectId }), // <-- real POST
+        new Promise((r) => setTimeout(r, 3000)), // <-- min 3s UX
+      ]);
+
+      if (!res.ok) {
+        toast.error(res.error || "Failed to submit trailer request.", {
+          id: toastId,
+        });
+        return;
+      }
+
+      toast.success(
+        "Trailer request sent. This project will be updated within the hour.",
+        { id: toastId }
+      );
+
+      // (Optional) if you want to open a player later when the URL is ready, handle it elsewhere.
+    } catch (e: any) {
+      toast.error(e?.message || "Network error while requesting trailer");
     } finally {
       setGenTrailerLoading(false);
     }

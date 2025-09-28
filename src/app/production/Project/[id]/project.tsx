@@ -11,6 +11,7 @@ import {
   MoneySend,
   Subtitle,
   Location,
+  GridEdit,
 } from "iconsax-react";
 import { useSceneAnalysis } from "@/hooks/production/useSceneAnalysis";
 
@@ -28,6 +29,7 @@ import ActorsView from "@/components/actors/ActorsView";
 import FinancesView from "@/components/finances/FinancesView";
 import SetLocations from "@/components/locations/SetLocations";
 import PosterTrailer from "@/components/project-assets/PosterTrailer";
+import ScriptEditor from "@/components/editor/ScriptEditor";
 import SummaryView from "@/components/summary/SummaryView";
 import SceneMetaAsideSkeleton from "@/components/scene/SceneMetaAsideSkeleton";
 import ShotScrollerSkeleton from "@/components/shot/ShotScrollerSkeleton";
@@ -78,6 +80,7 @@ export default function Project({ projectId }: { projectId: string }) {
     { key: "FINANCES", label: "Finances & ROI", icon: MoneySend },
     { key: "LOCATION", label: "Set Location", icon: Location },
     { key: "ASSETS", label: "Trailer & Poster", icon: Video },
+    { key: "EDITOR", label: "Script Editor", icon: GridEdit },
   ];
 
   // useEffect(() => {
@@ -152,10 +155,7 @@ export default function Project({ projectId }: { projectId: string }) {
           label: "VadisAI production",
           href: "/",
         }}
-        crumbs={[
-          { label: "Projects", href: "/projects" },
-          { label: `${projectId}` },
-        ]}
+        crumbs={[{ label: "Projects", href: "/" }, { label: `${projectId}` }]}
       />
 
       <main className="relative z-10 w-full flex h-[calc(100vh-40px)]">
@@ -248,6 +248,9 @@ export default function Project({ projectId }: { projectId: string }) {
               userEmail={email || ""}
               movieId="matrix-remastered"
             />
+          )}
+          {selected === "EDITOR" && (
+            <ScriptEditor projectId={projectId} userEmail={email || ""} />
           )}
           {/* {selected === "SUMMARY" && (
             <SummaryView

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Computer, Headphones, ChevronRight, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { logout } from "@/lib/api";
+import { ENV } from "@/config/env";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -35,7 +36,10 @@ export default function Sidebar() {
       </nav>
 
       <div className="mt-auto space-y-1 px-2">
-        <button className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-neutral-600 hover:bg-white">
+        <button
+          onClick={() => (window.location.href = `mailto:${ENV.API_BASE}`)}
+          className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-neutral-600 hover:bg-white"
+        >
           <Headphones size={16} className="text-neutral-700" />
           Support
         </button>

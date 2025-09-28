@@ -7,7 +7,17 @@ import Textarea from "@/components/creator/ui/Textarea";
 import Button from "@/components/creator/ui/Button";
 import { Audience, ContentType, Genre } from "@/types/creator/creator";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { ENV } from "@/config/env";
+
+/** Trending topics type from Flask endpoint */
+type TrendingTopic = {
+  topic: string;
+  subgenres?: string[];
+  story_hook?: string;
+  why_trending?: string;
+  sensitivity_flags?: string[];
+};
 
 export default function GenerateScriptSheet({
   open,
@@ -22,6 +32,8 @@ export default function GenerateScriptSheet({
     audience: Audience;
     content: ContentType;
     description: string;
+    /** optional: trending topic chosen from dropdown */
+    trendingTopic?: string;
   }) => Promise<void>;
 }) {
   const [name, setName] = useState("Morpheus The Dream Realm");
@@ -31,15 +43,65 @@ export default function GenerateScriptSheet({
   const [desc, setDesc] = useState(
     "The story should explore a mystical world where dreams and nightmares shape reality..."
   );
+
   const [submitting, setSubmitting] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+
+  // --- NEW: trending topics state ---
+  const [topics, setTopics] = useState<TrendingTopic[]>([]);
+  const [topicsLoading, setTopicsLoading] = useState(false);
+  const [topicsErr, setTopicsErr] = useState<string | null>(null);
+  const [selectedTopic, setSelectedTopic] = useState<string>("");
+
+  const topicOptions = useMemo(
+    () => [
+      { label: "Select a trending topic", value: "" },
+      ...topics.map((t) => ({ label: t.topic, value: t.topic })),
+    ],
+    [topics]
+  );
+
+  useEffect(() => {
+    async function fetchTopics() {
+      setTopicsLoading(true);
+      setTopicsErr(null);
+      try {
+        const base = ENV.API_BASE; // e.g. http://localhost:5001
+        const url = `${base}/trending/script-topics?country=US&n=12`;
+        const res = await fetch(url, { cache: "no-store" });
+        if (!res.ok) {
+          const msg = await res.text();
+          throw new Error(msg || `Failed with ${res.status}`);
+        }
+        const payload = await res.json();
+        if (!payload?.ok) throw new Error(payload?.error || "Unknown error");
+        setTopics(payload?.data ?? []);
+      } catch (e: any) {
+        setTopicsErr(e?.message || "Failed to load topics");
+      } finally {
+        setTopicsLoading(false);
+      }
+    }
+
+    if (open) {
+      // fetch when the sheet opens
+      fetchTopics();
+    }
+  }, [open]);
 
   async function handleSubmit() {
     if (submitting) return;
     setSubmitting(true);
     setErr(null);
     try {
-      await onSubmit({ name, genre, audience, content, description: desc });
+      await onSubmit({
+        name,
+        genre,
+        audience,
+        content,
+        description: desc,
+        trendingTopic: selectedTopic || undefined,
+      });
       onClose(); // close only after success
     } catch (e: any) {
       setErr(e?.message || "Failed to generate script");
@@ -47,6 +109,22 @@ export default function GenerateScriptSheet({
       setSubmitting(false);
     }
   }
+
+  // --- small inline skeleton for the topics block ---
+  function TopicSkeleton() {
+    return (
+      <div className="space-y-2">
+        <div className="h-9 w-full animate-pulse rounded-md bg-neutral-200" />
+        <div className="h-4 w-2/3 animate-pulse rounded bg-neutral-200" />
+        <div className="h-4 w-5/6 animate-pulse rounded bg-neutral-200" />
+      </div>
+    );
+  }
+
+  const activeTopic = useMemo(
+    () => topics.find((t) => t.topic === selectedTopic),
+    [topics, selectedTopic]
+  );
 
   return (
     <RightSheet
@@ -58,10 +136,16 @@ export default function GenerateScriptSheet({
         <Button
           onClick={handleSubmit}
           className="w-full inline-flex items-center gap-2"
-          disabled={submitting}
+          disabled={submitting || topicsLoading}
         >
-          {submitting && <Loader2 size={16} className="animate-spin" />}
-          {submitting ? "Generating script…" : "Generate script"}
+          {(submitting || topicsLoading) && (
+            <Loader2 size={16} className="animate-spin" />
+          )}
+          {submitting
+            ? "Generating script…"
+            : topicsLoading
+            ? "Loading topics…"
+            : "Generate script"}
         </Button>
       }
       widthClass="w-[420px]"
@@ -72,6 +156,95 @@ export default function GenerateScriptSheet({
             {err}
           </div>
         )}
+
+        {/* Trending topics block */}
+        <div className="rounded-xl border border-neutral-200 p-3">
+          <div className="mb-2 text-xs font-medium text-neutral-600">
+            Trending topics
+          </div>
+
+          {topicsLoading ? (
+            <TopicSkeleton />
+          ) : topicsErr ? (
+            <div className="space-y-2">
+              <div className="text-xs text-red-700">{topicsErr}</div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  // simple retry
+                  setTopicsErr(null);
+                  setTopicsLoading(true);
+                  fetch(
+                    `${ENV.API_BASE}/trending/script-topics?country=US&n=12`,
+                    {
+                      cache: "no-store",
+                    }
+                  )
+                    .then(async (r) => {
+                      if (!r.ok) throw new Error(await r.text());
+                      const j = await r.json();
+                      if (!j?.ok) throw new Error(j?.error || "Unknown error");
+                      setTopics(j?.data ?? []);
+                    })
+                    .catch((e) =>
+                      setTopicsErr(e?.message || "Failed to load topics")
+                    )
+                    .finally(() => setTopicsLoading(false));
+                }}
+              >
+                Retry
+              </Button>
+            </div>
+          ) : (
+            <>
+              <Select
+                value={selectedTopic}
+                onChange={(v) => {
+                  const val = v as string;
+                  setSelectedTopic(val);
+
+                  const picked = topics.find((t) => t.topic === val);
+                  if (picked) {
+                    // title ← topic
+                    setName(picked.topic);
+
+                    // description ← story_hook (fallback: keep current)
+                    if (picked.story_hook && picked.story_hook.trim()) {
+                      setDesc(picked.story_hook.trim());
+                    }
+                  }
+                }}
+                options={topicOptions}
+              />
+
+              {/* Helpful context preview for the chosen topic */}
+              {activeTopic && (
+                <div className="mt-3 space-y-2 rounded-lg bg-neutral-50 p-3">
+                  {activeTopic.story_hook && (
+                    <p className="text-xs text-neutral-700">
+                      <span className="font-medium">Hook:</span>{" "}
+                      {activeTopic.story_hook}
+                    </p>
+                  )}
+                  {activeTopic.subgenres?.length ? (
+                    <div className="flex flex-wrap gap-2">
+                      {activeTopic.subgenres.map((s) => (
+                        <span
+                          key={s}
+                          className="rounded-full border border-neutral-200 px-2 py-0.5 text-[11px] text-neutral-600"
+                        >
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
         <div>
           <label className="mb-1 block text-xs text-neutral-500">
             Script name

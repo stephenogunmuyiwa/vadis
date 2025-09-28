@@ -29,7 +29,20 @@ type ApiProject = {
   url?: string;
   pitch_deck_url?: string;
 };
-
+function CardSkeleton() {
+  return (
+    <div className="rounded-xl border border-zinc-200 p-3">
+      <div className="h-40 w-full animate-pulse rounded-lg bg-zinc-200" />
+      <div className="mt-3 h-4 w-2/3 animate-pulse rounded bg-zinc-200" />
+      <div className="mt-2 h-3 w-full animate-pulse rounded bg-zinc-200" />
+      <div className="mt-2 h-3 w-5/6 animate-pulse rounded bg-zinc-200" />
+      <div className="mt-3 flex gap-2">
+        <div className="h-5 w-16 animate-pulse rounded-full bg-zinc-200" />
+        <div className="h-5 w-12 animate-pulse rounded-full bg-zinc-200" />
+      </div>
+    </div>
+  );
+}
 // ---------- helpers ----------
 function scoreProject(p: ApiProject) {
   let s = 0;
@@ -176,11 +189,8 @@ export default function PlacementsPage() {
 
         {loading ? (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-70 animate-pulse rounded-2xl border border-[#DCDCDCFF] bg-white"
-              />
+            {Array.from({ length: 10 }).map((_, i) => (
+              <CardSkeleton key={i} />
             ))}
           </div>
         ) : error ? (

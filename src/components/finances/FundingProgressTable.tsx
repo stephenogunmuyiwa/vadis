@@ -89,7 +89,12 @@ const FundingProgressTable: FC<Props> = ({
             {displayCount}
           </span>
         </div>
-        <button className="rounded-md p-1.5 hover:bg-gray-50">
+        <button
+          onClick={() => {
+            console.log(items);
+          }}
+          className="rounded-md p-1.5 hover:bg-gray-50"
+        >
           <MoreHorizontal className="h-4 w-4 text-gray-500" />
         </button>
       </div>
@@ -128,9 +133,11 @@ const FundingProgressTable: FC<Props> = ({
         <ul className="space-y-1.5">
           {loading
             ? Array.from({ length: 5 }).map((_, i) => <RowSkeleton key={i} />)
-            : items.map((it) => (
+            : items.map((it, i) => (
                 <li
-                  key={it.id}
+                  key={`${
+                    it.id ?? it.investorId ?? it.meetingLink ?? "row"
+                  }-${i}`}
                   className={`${cols} items-center gap-3 rounded-xl px-3 py-2 hover:bg-gray-50`}
                 >
                   {/* Investor */}
@@ -175,9 +182,7 @@ const FundingProgressTable: FC<Props> = ({
 
                   {/* Pitch? */}
                   <div>
-                    <Badge tone={it.requestPitch ? "yes" : "no"}>
-                      {it.requestPitch ? "Requested" : "No"}
-                    </Badge>
+                    <Badge tone={"yes"}>{"Requested"}</Badge>
                   </div>
 
                   {/* Comments */}

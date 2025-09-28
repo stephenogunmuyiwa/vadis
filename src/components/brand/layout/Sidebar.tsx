@@ -4,7 +4,14 @@ import { usePathname, useParams } from "next/navigation";
 import { cn } from "@/lib/brand/cn";
 import { useRouter } from "next/navigation";
 import { logout } from "@/lib/api";
-import { Computer, Headphones, ChevronRight, LogOut } from "lucide-react";
+import {
+  Boxes,
+  Computer,
+  Headphones,
+  ChevronRight,
+  LogOut,
+} from "lucide-react";
+import { ENV } from "@/config/env";
 
 function Item({ href, label }: { href: string; label: string }) {
   const pathname = usePathname();
@@ -30,7 +37,7 @@ export function Sidebar() {
   return (
     <aside className="hidden w-60 shrink-0 border-r border-[#F3F3F3] bg-white px-3 py-4 md:flex md:flex-col">
       <div className="mb-6 flex items-center gap-2 px-2">
-        <div className="h-6 w-6 rounded bg-zinc-900" />
+        <Boxes className="h-5 w-5 text-neutral-900" />{" "}
         <span className="text-sm font-medium">Vadis AI Media</span>
       </div>
       <nav className="space-y-1">
@@ -39,7 +46,10 @@ export function Sidebar() {
       </nav>
 
       <div className="mt-auto space-y-1 px-2">
-        <button className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-neutral-600 hover:bg-white">
+        <button
+          onClick={() => (window.location.href = `mailto:${ENV.API_BASE}`)}
+          className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm text-neutral-600 hover:bg-white"
+        >
           <Headphones size={16} className="text-neutral-700" />
           Support
         </button>
