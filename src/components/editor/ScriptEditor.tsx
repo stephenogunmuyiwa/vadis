@@ -37,7 +37,7 @@ export default function ScriptEditor({
   // Config
   const API_BASE = ENV.API_BASE;
   const PATH_GET_SCENES = "/scenes";
-  const PATH_SAVE_SCENE = "/scene/save"; // adjust later if needed
+  const PATH_SAVE_SCENE = "/scene/save";
   const MAX_HISTORY = 500;
 
   // State
@@ -58,8 +58,8 @@ export default function ScriptEditor({
       const json: ScenesResponse = await res.json();
       if (!json.ok) throw new Error(json.error || "Failed to load scenes");
 
-      const next =
-        (json.data || []).map<SceneState>((s) => ({
+      const next = (json.data || [])
+        .map<SceneState>((s) => ({
           id: s.id,
           title: s.title || "",
           content: s.content || "",
@@ -70,7 +70,8 @@ export default function ScriptEditor({
           saving: false,
           refreshing: false,
           error: null,
-        })) ?? [];
+        }))
+        .sort((a, b) => Number(a.id) - Number(b.id));
 
       setScenes(next);
     } catch (e: any) {
